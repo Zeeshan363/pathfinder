@@ -9,6 +9,7 @@ class User(AbstractUser):
         COUNSELOR = 'COUNSELOR', 'Counselor'
         ADMIN = 'ADMIN', 'Admin'
     
+    name = models.CharField(max_length=255, blank=True)  # Added name field
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
