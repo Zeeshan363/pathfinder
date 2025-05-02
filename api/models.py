@@ -57,3 +57,10 @@ class Education(models.Model):
     major = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class Experience(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='experience')
+    company_name = models.CharField(max_length=100)
+    total_years_experience = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

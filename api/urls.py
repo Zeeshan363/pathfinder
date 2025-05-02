@@ -3,7 +3,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views.auth_views import RegisterView, CustomTokenObtainPairView, GetAllUsersView
 from .views.profile_views import (
     CreateProfileView, GetProfileByJWTView, UpdateProfileView, 
-    AddEducationToProfileView, DeleteEducationFromProfileView
+    AddEducationToProfileView, DeleteEducationFromProfileView,
+    AddExperienceToProfileView, DeleteExperienceFromProfileView
 )
 from .views.recommendation_views import GetCareerPathsView
 
@@ -20,6 +21,8 @@ urlpatterns = [
     path('profile/updateProfile/', UpdateProfileView.as_view(), name='update-profile'),
     path('profile/addEducationToProfile/', AddEducationToProfileView.as_view(), name='add-education'),
     path('profile/deleteEducationFromProfile/<int:education_id>/', DeleteEducationFromProfileView.as_view(), name='delete-education'),
+    path('profile/addExperienceToProfile/', AddExperienceToProfileView.as_view(), name='add-experience'),
+    path('profile/deleteExperienceFromProfile/<int:experience_id>/', DeleteExperienceFromProfileView.as_view(), name='delete-experience'),
     
     # Recommendation routes
     path('recommendation/getCareerPaths/', GetCareerPathsView.as_view(), name='get-career-paths'),

@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from ..models import Profile, Education
+from ..models import Profile, Education, Experience
 from ..serializers.profile_serializers import (
     ProfileSerializer, CreateProfileSerializer, UpdateProfileSerializer,
-    AddEducationSerializer, EducationSerializer
+    AddEducationSerializer, EducationSerializer,
+    AddExperienceSerializer, ExperienceSerializer
 )
 
 class CreateProfileView(APIView):
@@ -84,6 +85,37 @@ class DeleteEducationFromProfileView(APIView):
             profile = request.user.profile
             education = get_object_or_404(Education, id=education_id, profile=profile)
             education.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Profile.DoesNotExist:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class AddExperienceToProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            profile = request.user.profile
+            serializer = AddExperienceSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            experience = serializer.save(profile=profile)
+            return Response(ExperienceSerializer(experience).data, status=status.HTTP_201_CREATED)
+        except Profile.DoesNotExist:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class DeleteExperienceFromProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, experience_id):
+        try:
+            profile = request.user.profile
+            experience = get_object_or_404(Experience, id=experience_id, profile=profile)
+            experience.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Profile.DoesNotExist:
             return Response(
