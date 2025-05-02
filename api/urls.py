@@ -7,6 +7,9 @@ from .views.profile_views import (
     AddExperienceToProfileView, DeleteExperienceFromProfileView
 )
 from .views.recommendation_views import GetCareerPathsView
+from .views.job_views import (
+    JobListingsView, JobDetailView, RelevantJobsView, ScrapeJobsView
+)
 
 urlpatterns = [
     # Auth routes
@@ -26,4 +29,10 @@ urlpatterns = [
     
     # Recommendation routes
     path('recommendation/getCareerPaths/', GetCareerPathsView.as_view(), name='get-career-paths'),
+    
+    # Job routes
+    path('jobs/', JobListingsView.as_view(), name='job-listings'),
+    path('jobs/<int:job_id>/', JobDetailView.as_view(), name='job-detail'),
+    path('jobs/relevant/', RelevantJobsView.as_view(), name='relevant-jobs'),
+    path('jobs/scrape/', ScrapeJobsView.as_view(), name='scrape-jobs'),
 ]

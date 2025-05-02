@@ -64,3 +64,36 @@ class Experience(models.Model):
     total_years_experience = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class JobListing(models.Model):
+    """Model for storing job listings scraped from various sources"""
+    job_id = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255)
+    company = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    job_url = models.URLField(max_length=500)
+    logo_url = models.URLField(max_length=500, null=True, blank=True)
+    source = models.CharField(max_length=50)  # LinkedIn, Indeed, etc.
+    posted_date = models.DateField(null=True, blank=True)
+    skills = ArrayField(models.CharField(max_length=100), default=list)
+    job_type = models.CharField(max_length=100, blank=True)
+    seniority_level = models.CharField(max_length=100, blank=True)
+    salary_range = models.CharField(max_length=100, blank=True)
+    data = models.TextField(blank=True)  # For storing additional JSON data
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['job_id']),
+            models.Index(fields=['title']),
+            models.Index(fields=['company']),
+            models.Index(fields=['location']),
+            models.Index(fields=['source']),
+            models.Index(fields=['posted_date']),
+        ]
+        
+    def __str__(self):
+        return f"{self.title} at {self.company} ({self.source})"
