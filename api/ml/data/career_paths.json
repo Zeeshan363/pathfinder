@@ -1,0 +1,491 @@
+[
+  {
+    "id": 1,
+    "title": "Data Scientist",
+    "description": "Data scientists analyze and interpret complex data to help organizations make better decisions.",
+    "required_skills": [
+      "Python",
+      "R",
+      "Machine Learning",
+      "Statistics",
+      "SQL",
+      "Data Visualization",
+      "Deep Learning",
+      "Natural Language Processing",
+      "Big Data",
+      "Data Mining"
+    ],
+    "education": [
+      "Bachelor's or Master's degree in Computer Science, Statistics, or related field",
+      "PhD may be required for research positions"
+    ],
+    "salary_range": "$95,000 - $165,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, Research"
+  },
+  {
+    "id": 2,
+    "title": "Software Engineer",
+    "description": "Software engineers design, develop, and maintain software systems and applications.",
+    "required_skills": [
+      "Java",
+      "Python",
+      "JavaScript",
+      "C++",
+      "Software Development",
+      "Algorithms",
+      "Object-Oriented Programming",
+      "Git",
+      "Testing",
+      "Problem Solving"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Bootcamp certification with experience"
+    ],
+    "salary_range": "$85,000 - $150,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, Entertainment"
+  },
+  {
+    "id": 3,
+    "title": "Frontend Developer",
+    "description": "Frontend developers create the user interfaces and user experiences for websites and applications.",
+    "required_skills": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React",
+      "Angular",
+      "Vue.js",
+      "Responsive Design",
+      "UI/UX Design",
+      "Web Performance",
+      "Frontend Testing"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Bootcamp certification",
+      "Self-taught with portfolio"
+    ],
+    "salary_range": "$75,000 - $130,000",
+    "growth_potential": "High",
+    "industry": "Technology, E-commerce, Media, Marketing"
+  },
+  {
+    "id": 4,
+    "title": "Backend Developer",
+    "description": "Backend developers build and maintain the server-side logic and databases that power applications.",
+    "required_skills": [
+      "Node.js",
+      "Python",
+      "Java",
+      "Ruby",
+      "PHP",
+      "SQL",
+      "NoSQL",
+      "REST APIs",
+      "Server Architecture",
+      "Security"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Bootcamp certification with experience"
+    ],
+    "salary_range": "$80,000 - $140,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, E-commerce, Enterprise"
+  },
+  {
+    "id": 5,
+    "title": "DevOps Engineer",
+    "description": "DevOps engineers streamline development processes and manage infrastructure through automation.",
+    "required_skills": [
+      "Linux",
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "Azure",
+      "CI/CD",
+      "Infrastructure as Code",
+      "Monitoring",
+      "Bash",
+      "Automation"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Professional certifications (AWS, Azure, etc.)"
+    ],
+    "salary_range": "$90,000 - $145,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, Enterprise"
+  },
+  {
+    "id": 6,
+    "title": "UX/UI Designer",
+    "description": "UX/UI designers create user-friendly, visually appealing interfaces for digital products.",
+    "required_skills": [
+      "UI Design",
+      "UX Research",
+      "Wireframing",
+      "Prototyping",
+      "Figma",
+      "Adobe XD",
+      "User Testing",
+      "Visual Design",
+      "Interaction Design",
+      "Accessibility"
+    ],
+    "education": [
+      "Bachelor's degree in Design, HCI, or related field",
+      "Design bootcamp",
+      "Self-taught with strong portfolio"
+    ],
+    "salary_range": "$70,000 - $130,000",
+    "growth_potential": "Medium-High",
+    "industry": "Technology, E-commerce, Media, Marketing"
+  },
+  {
+    "id": 7,
+    "title": "Product Manager",
+    "description": "Product managers define product strategy and roadmap, coordinating development and go-to-market efforts.",
+    "required_skills": [
+      "Product Strategy",
+      "Market Research",
+      "User Stories",
+      "Roadmapping",
+      "Agile Methodologies",
+      "Data Analysis",
+      "Stakeholder Management",
+      "Prioritization",
+      "Product Analytics",
+      "Presentation Skills"
+    ],
+    "education": [
+      "Bachelor's degree in Business, Computer Science, or related field",
+      "MBA can be beneficial",
+      "Product Management certification"
+    ],
+    "salary_range": "$90,000 - $160,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, Consumer Products"
+  },
+  {
+    "id": 8,
+    "title": "Machine Learning Engineer",
+    "description": "Machine learning engineers build and deploy machine learning models for production environments.",
+    "required_skills": [
+      "Python",
+      "Machine Learning",
+      "Deep Learning",
+      "TensorFlow",
+      "PyTorch",
+      "Computer Vision",
+      "NLP",
+      "MLOps",
+      "Data Engineering",
+      "Cloud Computing"
+    ],
+    "education": [
+      "Master's or PhD in Computer Science, AI, or related field",
+      "Bachelor's with significant experience"
+    ],
+    "salary_range": "$100,000 - $175,000",
+    "growth_potential": "Very High",
+    "industry": "Technology, Finance, Healthcare, Automotive, Research"
+  },
+  {
+    "id": 9,
+    "title": "Data Analyst",
+    "description": "Data analysts collect, process, and analyze data to provide actionable insights for business decisions.",
+    "required_skills": [
+      "Excel",
+      "SQL",
+      "Data Visualization",
+      "Power BI",
+      "Tableau",
+      "Statistical Analysis",
+      "Python",
+      "R",
+      "Business Intelligence",
+      "Communication"
+    ],
+    "education": [
+      "Bachelor's degree in Statistics, Economics, Computer Science, or related field",
+      "Data analytics certification"
+    ],
+    "salary_range": "$65,000 - $110,000",
+    "growth_potential": "Medium-High",
+    "industry": "Technology, Finance, Healthcare, Retail, Marketing"
+  },
+  {
+    "id": 10,
+    "title": "Cybersecurity Analyst",
+    "description": "Cybersecurity analysts protect organizations' systems and data from security threats and breaches.",
+    "required_skills": [
+      "Network Security",
+      "Vulnerability Assessment",
+      "Threat Detection",
+      "Security Tools",
+      "Incident Response",
+      "Linux",
+      "Windows Security",
+      "Penetration Testing",
+      "Security Compliance",
+      "Cryptography"
+    ],
+    "education": [
+      "Bachelor's degree in Cybersecurity, Computer Science, or related field",
+      "Security certifications (CISSP, CEH, Security+)"
+    ],
+    "salary_range": "$80,000 - $140,000",
+    "growth_potential": "Very High",
+    "industry": "Technology, Finance, Healthcare, Government, Defense"
+  },
+  {
+    "id": 11,
+    "title": "Cloud Architect",
+    "description": "Cloud architects design and implement cloud computing solutions for organizations.",
+    "required_skills": [
+      "AWS",
+      "Azure",
+      "Google Cloud",
+      "Cloud Migration",
+      "Serverless Architecture",
+      "Networking",
+      "Security",
+      "Infrastructure as Code",
+      "Cost Optimization",
+      "Disaster Recovery"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Cloud certifications (AWS Solutions Architect, Azure Architect, etc.)"
+    ],
+    "salary_range": "$110,000 - $180,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, Enterprise"
+  },
+  {
+    "id": 12,
+    "title": "Digital Marketing Specialist",
+    "description": "Digital marketing specialists develop and implement online marketing strategies to promote products or services.",
+    "required_skills": [
+      "SEO",
+      "SEM",
+      "Social Media Marketing",
+      "Content Marketing",
+      "Email Marketing",
+      "Analytics",
+      "PPC Advertising",
+      "Marketing Automation",
+      "CRM",
+      "Copywriting"
+    ],
+    "education": [
+      "Bachelor's degree in Marketing, Business, or related field",
+      "Digital marketing certifications",
+      "Self-taught with portfolio"
+    ],
+    "salary_range": "$55,000 - $100,000",
+    "growth_potential": "Medium-High",
+    "industry": "Marketing, E-commerce, Technology, Media"
+  },
+  {
+    "id": 13,
+    "title": "Artificial Intelligence Researcher",
+    "description": "AI researchers advance the field of artificial intelligence through research and development of new algorithms and models.",
+    "required_skills": [
+      "Machine Learning",
+      "Deep Learning",
+      "Reinforcement Learning",
+      "Neural Networks",
+      "NLP",
+      "Computer Vision",
+      "Python",
+      "Research Methods",
+      "Mathematics",
+      "Publishing"
+    ],
+    "education": [
+      "PhD in Computer Science, AI, or related field",
+      "Master's with significant research experience"
+    ],
+    "salary_range": "$110,000 - $200,000",
+    "growth_potential": "High",
+    "industry": "Research Labs, Technology, Academia, Healthcare"
+  },
+  {
+    "id": 14,
+    "title": "Blockchain Developer",
+    "description": "Blockchain developers create and maintain blockchain applications and smart contracts.",
+    "required_skills": [
+      "Blockchain",
+      "Smart Contracts",
+      "Solidity",
+      "Ethereum",
+      "Cryptography",
+      "Web3.js",
+      "JavaScript",
+      "Go",
+      "Distributed Systems",
+      "Security"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Blockchain certifications",
+      "Self-taught with project portfolio"
+    ],
+    "salary_range": "$90,000 - $160,000",
+    "growth_potential": "High",
+    "industry": "Finance, Technology, Supply Chain, Legal"
+  },
+  {
+    "id": 15,
+    "title": "Mobile App Developer",
+    "description": "Mobile app developers create applications for iOS, Android, and other mobile platforms.",
+    "required_skills": [
+      "Swift",
+      "Kotlin",
+      "Java",
+      "React Native",
+      "Flutter",
+      "Mobile UI Design",
+      "API Integration",
+      "App Performance",
+      "App Store Guidelines",
+      "Testing"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Mobile development bootcamp",
+      "Self-taught with app portfolio"
+    ],
+    "salary_range": "$75,000 - $140,000",
+    "growth_potential": "Medium-High",
+    "industry": "Technology, E-commerce, Entertainment, Healthcare"
+  },
+  {
+    "id": 16,
+    "title": "Technical Writer",
+    "description": "Technical writers create clear documentation for software, hardware, and technical processes.",
+    "required_skills": [
+      "Technical Writing",
+      "Documentation",
+      "Content Strategy",
+      "Information Architecture",
+      "Markup Languages",
+      "API Documentation",
+      "User Guides",
+      "Editing",
+      "UX Writing",
+      "Knowledge Management"
+    ],
+    "education": [
+      "Bachelor's degree in English, Journalism, Technical Writing, or related field",
+      "Technical background or certification can be beneficial"
+    ],
+    "salary_range": "$60,000 - $110,000",
+    "growth_potential": "Medium",
+    "industry": "Technology, Healthcare, Manufacturing, Government"
+  },
+  {
+    "id": 17,
+    "title": "Game Developer",
+    "description": "Game developers create and program video games for various platforms.",
+    "required_skills": [
+      "Unity",
+      "Unreal Engine",
+      "C#",
+      "C++",
+      "Game Design",
+      "3D Modeling",
+      "Animation",
+      "Physics",
+      "Graphics Programming",
+      "AI Programming"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science, Game Development, or related field",
+      "Game development bootcamp",
+      "Self-taught with game portfolio"
+    ],
+    "salary_range": "$70,000 - $130,000",
+    "growth_potential": "Medium",
+    "industry": "Gaming, Entertainment, Education, VR/AR"
+  },
+  {
+    "id": 18,
+    "title": "Data Engineer",
+    "description": "Data engineers build and maintain data pipelines and infrastructure for processing and storing data.",
+    "required_skills": [
+      "SQL",
+      "Python",
+      "ETL",
+      "Data Warehousing",
+      "Apache Spark",
+      "Hadoop",
+      "Cloud Platforms",
+      "Data Modeling",
+      "Distributed Systems",
+      "Pipeline Orchestration"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science, Engineering, or related field",
+      "Data engineering certifications"
+    ],
+    "salary_range": "$90,000 - $160,000",
+    "growth_potential": "High",
+    "industry": "Technology, Finance, Healthcare, E-commerce"
+  },
+  {
+    "id": 19,
+    "title": "Full Stack Developer",
+    "description": "Full stack developers work on both frontend and backend aspects of web applications.",
+    "required_skills": [
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "React/Angular/Vue",
+      "Node.js",
+      "Python/Ruby/Java",
+      "Databases",
+      "REST APIs",
+      "Version Control",
+      "DevOps Basics"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science or related field",
+      "Full stack bootcamp",
+      "Self-taught with project portfolio"
+    ],
+    "salary_range": "$80,000 - $145,000",
+    "growth_potential": "High",
+    "industry": "Technology, E-commerce, Media, Finance"
+  },
+  {
+    "id": 20,
+    "title": "AR/VR Developer",
+    "description": "AR/VR developers create immersive experiences using augmented and virtual reality technologies.",
+    "required_skills": [
+      "Unity",
+      "Unreal Engine",
+      "C#",
+      "3D Modeling",
+      "Computer Vision",
+      "AR Frameworks",
+      "VR Development",
+      "Spatial Computing",
+      "UI/UX for AR/VR",
+      "Animation"
+    ],
+    "education": [
+      "Bachelor's degree in Computer Science, Game Development, or related field",
+      "AR/VR development certifications",
+      "Self-taught with project portfolio"
+    ],
+    "salary_range": "$85,000 - $150,000",
+    "growth_potential": "Very High",
+    "industry": "Technology, Entertainment, Healthcare, Education, Retail"
+  }
+] 

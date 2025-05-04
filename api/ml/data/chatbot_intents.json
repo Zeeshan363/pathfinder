@@ -1,0 +1,146 @@
+[
+  {
+    "tag": "greeting",
+    "patterns": [
+      "Hi",
+      "Hey",
+      "Hello",
+      "Good day",
+      "Greetings",
+      "What's up",
+      "How are you",
+      "Is anyone there?",
+      "Hello there",
+      "Hi there"
+    ],
+    "responses": [
+      "Hello! How can I help you with your career planning?",
+      "Hi there! I'm your career guidance assistant. What would you like to know about careers?",
+      "Hey! I can help you find the right career path. What skills do you have?"
+    ]
+  },
+  {
+    "tag": "goodbye",
+    "patterns": [
+      "Bye",
+      "See you later",
+      "Goodbye",
+      "Take care",
+      "I'm leaving",
+      "Have a good day",
+      "See ya",
+      "Till next time",
+      "Farewell"
+    ],
+    "responses": [
+      "Goodbye! Feel free to come back if you have more career questions.",
+      "See you later! Best of luck with your career journey.",
+      "Take care! Remember to keep building your skills for your dream career."
+    ]
+  },
+  {
+    "tag": "thanks",
+    "patterns": [
+      "Thanks",
+      "Thank you",
+      "That's helpful",
+      "Appreciate it",
+      "Thanks a lot",
+      "Thanks for the help",
+      "Thank you so much",
+      "That was helpful"
+    ],
+    "responses": [
+      "You're welcome! Happy to help with your career planning.",
+      "Anytime! Your career development is important.",
+      "No problem! Let me know if you need more career guidance."
+    ]
+  },
+  {
+    "tag": "career_recommendation",
+    "patterns": [
+      "What career should I pursue?",
+      "What job is right for me?",
+      "Suggest a career for me",
+      "Help me find a suitable career",
+      "What careers match my skills?",
+      "Career recommendations",
+      "What should I be when I grow up?",
+      "What professions match my interests?",
+      "Help me choose a career path"
+    ],
+    "responses": [
+      "I can help you find a suitable career! What skills do you have?",
+      "Finding the right career path is important. Could you tell me about your skills and interests?",
+      "To recommend careers, I need to know your skills. What are you good at?"
+    ]
+  },
+  {
+    "tag": "skill_gap",
+    "patterns": [
+      "What skills do I need for",
+      "How do I become a",
+      "Skills required for",
+      "What should I learn to be a",
+      "Skill gap for",
+      "What am I missing to become",
+      "How to prepare for career in",
+      "Requirements for",
+      "Qualifications for"
+    ],
+    "responses": [
+      "I can analyze skill gaps for specific careers. Which career are you interested in?",
+      "To identify skill gaps, I need to know which career you're targeting and your current skills.",
+      "I'll help you bridge the gap to your desired career. What career are you interested in, and what skills do you already have?"
+    ]
+  },
+  {
+    "tag": "course_recommendation",
+    "patterns": [
+      "What should I study?",
+      "Recommend courses for me",
+      "What courses should I take?",
+      "How to learn",
+      "Best way to learn",
+      "Suggest courses for",
+      "How can I improve my skills in",
+      "Training programs for",
+      "Certifications for"
+    ],
+    "responses": [
+      "To recommend courses, I need to know what career you're targeting. Could you share more details?",
+      "I can suggest courses once I understand your career goals and current skills.",
+      "Learning resources depend on your target career and skill level. What are you interested in?"
+    ]
+  },
+  {
+    "tag": "career_information",
+    "patterns": [
+      "Tell me about being a",
+      "What does a do",
+      "Day in the life of a",
+      "Responsibilities of",
+      "What is it like to be a",
+      "Career information for",
+      "Salary for",
+      "How much does a earn",
+      "Job outlook for",
+      "Is a good career",
+      "Future of"
+    ],
+    "responses": [
+      "I can provide information about specific careers. Which one would you like to learn about?",
+      "Career information includes responsibilities, skills required, and salary expectations. Which career are you curious about?",
+      "I have details on various careers. Which specific profession would you like to know more about?"
+    ]
+  },
+  {
+    "tag": "fallback",
+    "patterns": [],
+    "responses": [
+      "I'm not sure I understand. Could you rephrase that?",
+      "I'm still learning about careers. Could you ask in a different way?",
+      "I'm not sure how to help with that. I can provide career recommendations, skill gap analysis, and career information. How can I assist you?"
+    ]
+  }
+]

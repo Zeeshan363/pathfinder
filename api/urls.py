@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views.auth_views import RegisterView, CustomTokenObtainPairView, GetAllUsersView
 from .views.profile_views import (
@@ -10,8 +11,14 @@ from .views.recommendation_views import GetCareerPathsView
 from .views.job_views import (
     JobListingsView, JobDetailView, RelevantJobsView, ScrapeJobsView
 )
+from .views.career_views import CareerViewSet
+
+router = routers.DefaultRouter()
+router.register(r'career', CareerViewSet, basename='career')
 
 urlpatterns = [
+    path('', include(router.urls)),
+    
     # Auth routes
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', CustomTokenObtainPairView.as_view(), name='login'),
