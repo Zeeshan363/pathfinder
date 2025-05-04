@@ -210,6 +210,100 @@ class CareerViewSet(viewsets.ViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
     
+    @action(detail=False, methods=['post'])
+    def train_chatbot(self, request):
+        """
+        Add new training data to the chatbot.
+        
+        Request body format:
+        {
+            "message": "What skills do I need for a blockchain developer?",
+            "intent": "skill_gap",
+            "response": "For a blockchain developer, you typically need skills in..."
+        }
+        
+        Or to create a new intent:
+        {
+            "new_intent": "job_search",
+            "patterns": ["How do I find jobs?", "Where to apply for jobs"],
+            "responses": ["You can find jobs on LinkedIn and other job boards"]
+        }
+        """
+        if not self.career_chatbot:
+            return Response(
+                {"error": "Career chatbot is not available"},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only staff users can train the chatbot"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        data = request.data
+        
+        # Check if we're creating a new intent
+        if data.get('new_intent'):
+            new_intent = data.get('new_intent')
+            patterns = data.get('patterns', [])
+            responses = data.get('responses', [])
+            
+            if not patterns or not responses:
+                return Response(
+                    {"error": "Patterns and responses are required for new intents"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            result = self.career_chatbot.create_new_intent(
+                tag=new_intent,
+                patterns=patterns,
+                responses=responses
+            )
+            
+            if result:
+                # Retrain the model
+                self.career_chatbot.retrain_model()
+                return Response(
+                    {"success": f"Created new intent: {new_intent}"},
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {"error": f"Intent '{new_intent}' already exists or is invalid"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        # Otherwise, add an example to an existing intent
+        message = data.get('message')
+        intent = data.get('intent')
+        response = data.get('response')
+        
+        if not message or not intent:
+            return Response(
+                {"error": "Message and intent are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        result = self.career_chatbot.add_training_example(
+            message=message,
+            intent_tag=intent,
+            response=response
+        )
+        
+        if result:
+            # Retrain the model after adding a new example
+            self.career_chatbot.retrain_model()
+            return Response(
+                {"success": f"Added training example to intent: {intent}"},
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            return Response(
+                {"error": f"Intent '{intent}' not found or message is invalid"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
     @action(detail=False, methods=['get'])
     def careers(self, request):
         """

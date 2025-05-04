@@ -542,4 +542,125 @@ class CareerChatbot:
         return {
             'text': random.choice(fallback_responses),
             'context': user_context
-        } 
+        }
+    
+    def add_training_example(self, message, intent_tag, response=None):
+        """
+        Add a new training example to the intents and optionally a new response
+        
+        Args:
+            message (str): The user message to add as a training pattern
+            intent_tag (str): The intent tag to associate with this message
+            response (str, optional): A response to add for this intent
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not message or not intent_tag:
+            return False
+        
+        # Normalize the message
+        message = message.strip()
+        
+        # Find the matching intent
+        for intent in self.intents:
+            if intent['tag'] == intent_tag:
+                # Add the new pattern if it doesn't exist
+                if message not in intent['patterns']:
+                    intent['patterns'].append(message)
+                    logger.info(f"Added new pattern to {intent_tag}: {message}")
+                
+                # Optionally add a new response
+                if response and response not in intent['responses']:
+                    intent['responses'].append(response)
+                    logger.info(f"Added new response to {intent_tag}: {response}")
+                
+                # Save the updated intents
+                self._save_intents(self.intents)
+                
+                # Update the vectorizer with the new pattern
+                self._update_vectorizer([message])
+                
+                return True
+        
+        # If we get here, the intent tag wasn't found
+        logger.warning(f"Intent tag not found: {intent_tag}")
+        return False
+    
+    def _update_vectorizer(self, new_patterns):
+        """Update the vectorizer with new patterns"""
+        try:
+            # Get all existing patterns
+            all_patterns = []
+            for intent in self.intents:
+                all_patterns.extend(intent['patterns'])
+            
+            # Retrain the vectorizer with all patterns
+            self.vectorizer = CountVectorizer(max_features=self.input_size)
+            self.vectorizer.fit(all_patterns)
+            logger.info("Updated vectorizer with new patterns")
+        except Exception as e:
+            logger.error(f"Error updating vectorizer: {str(e)}")
+    
+    def retrain_model(self, epochs=50, learning_rate=0.001):
+        """
+        Retrain the model with updated intents
+        
+        Args:
+            epochs (int): Number of training epochs
+            learning_rate (float): Learning rate for optimizer
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            result = self._train_basic_model(epochs=epochs, learning_rate=learning_rate)
+            if result:
+                logger.info("Successfully retrained chatbot model with new data")
+            return result
+        except Exception as e:
+            logger.error(f"Error retraining model: {str(e)}")
+            return False
+            
+    def create_new_intent(self, tag, patterns=None, responses=None):
+        """
+        Create a new intent category for the chatbot
+        
+        Args:
+            tag (str): The intent tag name
+            patterns (list): List of example patterns for this intent
+            responses (list): List of responses for this intent
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not tag:
+            return False
+            
+        # Check if intent already exists
+        for intent in self.intents:
+            if intent['tag'] == tag:
+                return False  # Intent already exists
+                
+        # Create new intent
+        new_intent = {
+            "tag": tag,
+            "patterns": patterns or [],
+            "responses": responses or []
+        }
+        
+        # Add to intents list
+        self.intents.append(new_intent)
+        
+        # Save the updated intents
+        self._save_intents(self.intents)
+        
+        # Update the vectorizer if patterns were provided
+        if patterns:
+            self._update_vectorizer(patterns)
+            
+        # Update output size for the model
+        self.output_size = len(self.intents)
+        
+        logger.info(f"Created new intent: {tag}")
+        return True 
