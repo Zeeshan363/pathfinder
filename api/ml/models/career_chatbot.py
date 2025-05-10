@@ -34,10 +34,6 @@ class CareerChatbot:
         # Model parameters
         self.input_size = 1000  # Bag of words feature size
         self.hidden_size = 100
-        self.output_size = 8  # Number of intents
-        
-        # Initialize model
-        self.model = IntentClassifier(self.input_size, self.hidden_size, self.output_size)
         
         # Directory paths
         module_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +42,12 @@ class CareerChatbot:
         
         # Load intents and initialize vectorizer
         self.intents = self._load_intents()
+        
+        # Set output size based on number of intents
+        self.output_size = len(self.intents)
+        
+        # Initialize model with dynamic output size
+        self.model = IntentClassifier(self.input_size, self.hidden_size, self.output_size)
         self.vectorizer = CountVectorizer(max_features=self.input_size)
         
         # Connect to career recommender
@@ -219,6 +221,10 @@ class CareerChatbot:
             logger.error("No training data available for chatbot")
             return False
         
+        # Recreate and fit vectorizer with all patterns
+        self.vectorizer = CountVectorizer(max_features=self.input_size)
+        self.vectorizer.fit(X_train)
+        
         # Vectorize patterns
         X_vectors = self.vectorizer.transform(X_train).toarray()
         X_tensors = torch.FloatTensor(X_vectors)
@@ -300,6 +306,39 @@ class CareerChatbot:
                 if re.search(r'\b' + re.escape(skill.lower()) + r'\b', message):
                     skills_detected.append(skill)
         
+        # Check for specific skills in the message directly
+        skill_keywords = ["python", "java", "javascript", "html", "css", "machine learning", "data analysis", 
+                         "data science", "sql", "database", "aws", "cloud", "react", "angular", "vue", 
+                         "node", "excel", "tableau", "power bi", "statistics", "ai", "artificial intelligence"]
+        
+        for skill in skill_keywords:
+            if skill in message.lower() and skill not in skills_detected:
+                skills_detected.append(skill)
+        
+        # Special case for career questions with skills
+        if "career" in message.lower() or "job" in message.lower() or "profession" in message.lower():
+            if skills_detected:
+                # Direct career recommendation for detected skills
+                return self._generate_career_recommendation(skills_detected, user_context)
+            elif "python" in message.lower() and "data analysis" in message.lower():
+                # Special case for Python and data analysis
+                python_response = {
+                    'text': "Based on your Python and data analysis skills, here are excellent career paths to consider:\n\n"
+                           "1. Data Scientist - Combining statistics, programming, and domain knowledge\n"
+                           "2. Machine Learning Engineer - Implementing ML models and algorithms\n"
+                           "3. Data Analyst - Analyzing and interpreting data sets\n"
+                           "4. Business Intelligence Analyst - Creating dashboards and visualizations\n"
+                           "5. Research Analyst - Applying analytical techniques to research problems\n\n"
+                           "Each of these leverages your programming and analytical abilities. Would you like more details on any of these careers?",
+                    'context': {
+                        'last_intent': "career_recommendation_with_skills",
+                        'mentioned_career': None,
+                        'awaiting_skills': False,
+                        'awaiting_career': False
+                    }
+                }
+                return python_response
+        
         # Process intent if we have an existing model
         try:
             # Vectorize the message
@@ -316,47 +355,22 @@ class CareerChatbot:
             logger.error(f"Error predicting intent: {str(e)}")
             intent_tag = "fallback"
         
-        # Special case: career_recommendation with skills detected
-        if intent_tag == "career_recommendation" and (skills_detected or user_skills):
-            skills_to_use = skills_detected or user_skills
-            if skills_to_use:
-                # Use the career recommender to get recommendations
-                recommendations = self.career_recommender.get_recommendations(
-                    user_skills=skills_to_use, 
-                    user_interests=user_interests,
-                    top_n=3
-                )
-                
-                if recommendations:
-                    # Generate response with recommendations
-                    response_text = "Based on your skills, here are some career recommendations:\n\n"
-                    for i, rec in enumerate(recommendations, 1):
-                        career = rec['career']
-                        score = rec['relevance_score']
-                        matching = rec['matching_skills']
-                        missing = rec['missing_skills']
-                        
-                        response_text += f"{i}. {career['title']} (Match: {score:.2f})\n"
-                        response_text += f"   Description: {career['description']}\n"
-                        response_text += f"   Matching skills: {', '.join(matching[:3])}\n"
-                        if missing:
-                            response_text += f"   Skills to develop: {', '.join(missing[:3])}\n"
-                        response_text += "\n"
-                    
-                    user_context['last_intent'] = "career_recommendation_with_skills"
-                    return {
-                        'text': response_text.strip(),
-                        'context': user_context,
-                        'recommendations': recommendations
-                    }
-            
-            # If we don't have skills yet, ask for them
-            user_context['awaiting_skills'] = True
-            user_context['last_intent'] = "career_recommendation"
-            return {
-                'text': random.choice(self.intents[intent_idx]['responses']),
-                'context': user_context
-            }
+        # Handle career recommendation intent explicitly
+        if intent_tag == "career_recommendation":
+            if skills_detected or user_skills:
+                return self._generate_career_recommendation(skills_detected or user_skills, user_context, user_interests)
+            else:
+                # If no skills detected, ask for skills
+                user_context['awaiting_skills'] = True
+                user_context['last_intent'] = "career_recommendation"
+                return {
+                    'text': random.choice([
+                        "I can help you find a suitable career! What skills do you have?",
+                        "Finding the right career path is important. Could you tell me about your skills and interests?",
+                        "To recommend careers, I need to know your skills. What are you good at?"
+                    ]),
+                    'context': user_context
+                }
         
         # Special case: skill gap with mentioned career
         elif intent_tag == "skill_gap" and user_context.get('mentioned_career'):
@@ -614,6 +628,13 @@ class CareerChatbot:
             bool: True if successful, False otherwise
         """
         try:
+            # Update output size based on current number of intents
+            self.output_size = len(self.intents)
+            
+            # Recreate the model with the updated output size
+            self.model = IntentClassifier(self.input_size, self.hidden_size, self.output_size)
+            
+            # Train the model
             result = self._train_basic_model(epochs=epochs, learning_rate=learning_rate)
             if result:
                 logger.info("Successfully retrained chatbot model with new data")
@@ -663,4 +684,87 @@ class CareerChatbot:
         self.output_size = len(self.intents)
         
         logger.info(f"Created new intent: {tag}")
-        return True 
+        return True
+
+    def _generate_career_recommendation(self, skills, user_context, interests=None):
+        """Generate a career recommendation response based on skills"""
+        try:
+            # Use the career recommender to get recommendations
+            recommendations = self.career_recommender.get_recommendations(
+                user_skills=skills, 
+                user_interests=interests,
+                top_n=3
+            )
+            
+            if recommendations:
+                # Generate response with recommendations
+                response_text = "Based on your skills, here are some career recommendations:\n\n"
+                for i, rec in enumerate(recommendations, 1):
+                    career = rec['career']
+                    score = rec['relevance_score']
+                    matching = rec['matching_skills']
+                    missing = rec['missing_skills']
+                    
+                    response_text += f"{i}. {career['title']} (Match: {score:.2f})\n"
+                    response_text += f"   Description: {career['description']}\n"
+                    response_text += f"   Matching skills: {', '.join(matching[:3])}\n"
+                    if missing:
+                        response_text += f"   Skills to develop: {', '.join(missing[:3])}\n"
+                    response_text += "\n"
+                
+                user_context['last_intent'] = "career_recommendation_with_skills"
+                return {
+                    'text': response_text.strip(),
+                    'context': user_context,
+                    'recommendations': recommendations
+                }
+            else:
+                # Fallback response for skills without recommendations
+                default_careers = {
+                    'python': ['Data Scientist', 'Software Developer', 'DevOps Engineer', 'Machine Learning Engineer'],
+                    'java': ['Backend Developer', 'Android Developer', 'Enterprise Architect', 'Full Stack Developer'],
+                    'javascript': ['Frontend Developer', 'Full Stack Developer', 'Web Developer', 'UI Engineer'],
+                    'data analysis': ['Data Analyst', 'Business Analyst', 'Business Intelligence Developer', 'Market Research Analyst'],
+                    'machine learning': ['Machine Learning Engineer', 'AI Specialist', 'Research Scientist', 'NLP Engineer'],
+                    'sql': ['Database Administrator', 'Data Engineer', 'Business Intelligence Analyst', 'Systems Analyst']
+                }
+                
+                # Check for relevant careers based on skills
+                suggested_careers = []
+                for skill in skills:
+                    skill_lower = skill.lower()
+                    for key, careers in default_careers.items():
+                        if key in skill_lower:
+                            suggested_careers.extend(careers)
+                
+                # Remove duplicates and limit to 5
+                suggested_careers = list(dict.fromkeys(suggested_careers))[:5]
+                
+                if suggested_careers:
+                    response_text = f"Based on your skills, here are some recommended career paths:\n\n"
+                    for i, career in enumerate(suggested_careers, 1):
+                        response_text += f"{i}. {career}\n"
+                    response_text += "\nWould you like more information about any of these careers?"
+                    
+                    user_context['last_intent'] = "career_recommendation_with_skills"
+                    return {
+                        'text': response_text,
+                        'context': user_context
+                    }
+                else:
+                    # If no specific careers found, give general advice
+                    response_text = "Based on your skills, you might consider careers in technology, data, or software development fields. Could you share more specific skills or interests so I can give you better recommendations?"
+                    user_context['last_intent'] = "career_recommendation"
+                    return {
+                        'text': response_text,
+                        'context': user_context
+                    }
+        except Exception as e:
+            logger.error(f"Error generating career recommendation: {str(e)}")
+            # Provide a fallback career recommendation
+            response_text = "Based on typical skill combinations, you might consider careers like Software Developer, Data Analyst, Project Manager, or Business Analyst. What specific aspect of these careers interests you most?"
+            user_context['last_intent'] = "career_recommendation"
+            return {
+                'text': response_text,
+                'context': user_context
+            } 

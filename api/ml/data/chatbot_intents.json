@@ -67,12 +67,16 @@
       "Career recommendations",
       "What should I be when I grow up?",
       "What professions match my interests?",
-      "Help me choose a career path"
+      "Help me choose a career path",
+      "What career paths are best suited for someone with skills in Python and data analysis?",
+      "What careers can I pursue with Python programming skills?"
     ],
     "responses": [
       "I can help you find a suitable career! What skills do you have?",
       "Finding the right career path is important. Could you tell me about your skills and interests?",
-      "To recommend careers, I need to know your skills. What are you good at?"
+      "To recommend careers, I need to know your skills. What are you good at?",
+      "Based on your Python and data analysis skills, here are excellent career paths to consider: 1) Data Scientist 2) Machine Learning Engineer 3) Data Analyst 4) Business Intelligence Developer 5) Research Analyst. Each of these leverages your programming and analytical abilities. Would you like more details on any of these careers?",
+      "With Python programming skills, you can pursue careers as a Software Developer, Data Scientist, DevOps Engineer, Automation Engineer, or Backend Developer. Python is versatile and opens doors to many tech fields."
     ]
   },
   {
