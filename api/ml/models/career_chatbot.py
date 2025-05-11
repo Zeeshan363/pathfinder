@@ -32,8 +32,8 @@ class CareerChatbot:
     
     def __init__(self, model_path=None, intents_path=None):
         # Model parameters
-        self.input_size = 1000  # Bag of words feature size
-        self.hidden_size = 100
+        self.input_size = 100  # Reduced from 1000 to match actual vocabulary size
+        self.hidden_size = 64  # Reduced from 100 for better training
         
         # Directory paths
         module_dir = os.path.dirname(os.path.abspath(__file__))
@@ -67,6 +67,10 @@ class CareerChatbot:
                 self.model.load_state_dict(torch.load(self.model_path))
                 self.model.eval()
                 logger.info(f"Loaded pre-trained chatbot model from {self.model_path}")
+            else:
+                # Train a basic model if none exists
+                logger.info("No pre-trained model found, training new model...")
+                self._train_basic_model()
         except Exception as e:
             logger.warning(f"Could not load pre-trained chatbot model: {str(e)}")
             # Train a basic model if none exists
