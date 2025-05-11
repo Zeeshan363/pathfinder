@@ -1,7 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.conf import settings
 import os
 import json
@@ -18,6 +18,14 @@ class CareerViewSet(viewsets.ViewSet):
     API endpoints for career guidance, recommendations, and chatbot interactions.
     """
     permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Override to allow public access to chatbot endpoint
+        """
+        if self.action == 'chatbot':
+            return [AllowAny()]
+        return [IsAuthenticated()]
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
