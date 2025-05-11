@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from ..serializers.auth_serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer
+from rest_framework.pagination import PageNumberPagination
 
 User = get_user_model()
 
@@ -26,10 +27,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 class GetAllUsersView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     
+    class UserPagination(PageNumberPagination):
+        page_size = 10
+        page_size_query_param = 'page_size'
+        max_page_size = 100
+
     def get(self, request):
-        # In a real app, you might want to restrict this to admin users
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+        users = User.objects.all().order_by('id')
+        paginator = self.UserPagination()
+        page = paginator.paginate_queryset(users, request)
+        serializer = UserSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
