@@ -1,30 +1,46 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
+try:
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
 import numpy as np
 import os
 import json
 import logging
 from collections import defaultdict
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
-class CareerEmbeddingModel(nn.Module):
-    """
-    Neural network model for embedding skills and career paths into a shared vector space
-    """
-    def __init__(self, input_size, hidden_size, output_size):
-        super(CareerEmbeddingModel, self).__init__()
-        self.embedding_layer = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, output_size)
-        )
-        
-    def forward(self, x):
-        return self.embedding_layer(x)
+if TORCH_AVAILABLE:
+    class CareerEmbeddingModel(nn.Module):
+        """
+        Neural network model for embedding skills and career paths into a shared vector space
+        """
+        def __init__(self, input_size, hidden_size, output_size):
+            super(CareerEmbeddingModel, self).__init__()
+            self.embedding_layer = nn.Sequential(
+                nn.Linear(input_size, hidden_size),
+                nn.ReLU(),
+                nn.Linear(hidden_size, output_size)
+            )
+            
+        def forward(self, x):
+            return self.embedding_layer(x)
+else:
+    # Fallback placeholder class when torch is not available
+    class CareerEmbeddingModel:
+        def __init__(self, input_size, hidden_size, output_size):
+            self.input_size = input_size
+            self.hidden_size = hidden_size
+            self.output_size = output_size
 
 class CareerRecommender:
     """
@@ -46,29 +62,31 @@ class CareerRecommender:
         
         # Load career paths data and vectorizer
         self.career_paths = self._load_career_paths()
-        self.vectorizer = TfidfVectorizer(max_features=self.input_size)
-        self.skill_matrix = None
-        
-        # If skills data exists, fit the vectorizer
-        if self.career_paths:
-            # Extract all skills from career paths for vectorizer training
-            all_skills = []
-            for career in self.career_paths:
-                skills_text = ' '.join(career.get('required_skills', []))
-                all_skills.append(skills_text)
+        if SKLEARN_AVAILABLE:
+            self.vectorizer = TfidfVectorizer(max_features=self.input_size)
+            self.skill_matrix = None
             
-            # Fit vectorizer on all skills
-            if all_skills:
-                self.skill_matrix = self.vectorizer.fit_transform(all_skills)
+            # If skills data exists, fit the vectorizer
+            if self.career_paths:
+                # Extract all skills from career paths for vectorizer training
+                all_skills = []
+                for career in self.career_paths:
+                    skills_text = ' '.join(career.get('required_skills', []))
+                    all_skills.append(skills_text)
+                
+                # Fit vectorizer on all skills
+                if all_skills:
+                    self.skill_matrix = self.vectorizer.fit_transform(all_skills)
         
         # Try to load pre-trained model if it exists
-        try:
-            if os.path.exists(self.model_path):
-                self.model.load_state_dict(torch.load(self.model_path))
-                self.model.eval()
-                logger.info(f"Loaded pre-trained career model from {self.model_path}")
-        except Exception as e:
-            logger.warning(f"Could not load pre-trained model: {str(e)}")
+        if TORCH_AVAILABLE:
+            try:
+                if os.path.exists(self.model_path):
+                    self.model.load_state_dict(torch.load(self.model_path))
+                    self.model.eval()
+                    logger.info(f"Loaded pre-trained career model from {self.model_path}")
+            except Exception as e:
+                logger.warning(f"Could not load pre-trained model: {str(e)}")
     
     def _load_career_paths(self):
         """Load career paths data from JSON file"""
@@ -191,6 +209,10 @@ class CareerRecommender:
     
     def save_model(self):
         """Save the trained model to disk"""
+        if not TORCH_AVAILABLE:
+            logger.error("PyTorch not available, cannot save model")
+            return False
+            
         try:
             model_dir = os.path.dirname(self.model_path)
             if not os.path.exists(model_dir):
@@ -219,6 +241,10 @@ class CareerRecommender:
     
     def train(self, epochs=100, learning_rate=0.001):
         """Train the career recommendation model"""
+        if not TORCH_AVAILABLE or not SKLEARN_AVAILABLE:
+            logger.error("PyTorch or scikit-learn not available, cannot train model")
+            return False
+            
         if not self.career_paths or len(self.career_paths) < 2:
             logger.error("Not enough career paths data for training")
             return False
@@ -249,12 +275,6 @@ class CareerRecommender:
             loss.backward()
             optimizer.step()
             
-            if (epoch + 1) % 10 == 0:
-                logger.info(f'Epoch {epoch+1}/{epochs}, Loss: {loss.item():.4f}')
-        
-        # Save the trained model
-        self.save_model()
-        self.model.eval()
         return True
     
     def get_recommendations(self, user_skills, user_interests=None, top_n=5):
@@ -267,39 +287,36 @@ class CareerRecommender:
             top_n (int): Number of recommendations to return
             
         Returns:
-            list: List of recommended careers with relevance scores
+            list: List of recommended careers with scores
         """
         if not self.career_paths:
             logger.error("No career paths data available")
             return []
+            
+        if not SKLEARN_AVAILABLE:
+            # Fallback to simple matching if sklearn is not available
+            recommendations = []
+            for career in self.career_paths:
+                required_skills = career.get('required_skills', [])
+                matching_skills = [skill for skill in user_skills if skill in required_skills]
+                score = len(matching_skills) / max(len(required_skills), 1) if required_skills else 0
+                
+                recommendations.append({
+                    'career': career,
+                    'score': score,
+                    'matching_skills': matching_skills,
+                    'missing_skills': [skill for skill in required_skills if skill not in user_skills]
+                })
+                
+            # Sort by score in descending order
+            recommendations.sort(key=lambda x: x['score'], reverse=True)
+            return recommendations[:top_n]
         
-        # Prepare user skill vector
+        # Continue with sklearn-based approach
         user_skills_text = ' '.join(user_skills)
-        if user_interests:
-            user_skills_text += ' ' + ' '.join(user_interests)
+        user_vector = self.vectorizer.transform([user_skills_text]).toarray()
         
-        # Transform user skills using the same vectorizer
-        try:
-            user_vector = self.vectorizer.transform([user_skills_text])
-        except Exception as e:
-            # If vectorizer was not fit before, fit it now
-            all_skills = []
-            for career in self.career_paths:
-                skills_text = ' '.join(career.get('required_skills', []))
-                all_skills.append(skills_text)
-            all_skills.append(user_skills_text)
-            self.vectorizer.fit(all_skills)
-            user_vector = self.vectorizer.transform([user_skills_text])
-        
-        # Calculate similarity between user skills and career paths
-        if self.skill_matrix is None:
-            all_skills = []
-            for career in self.career_paths:
-                skills_text = ' '.join(career.get('required_skills', []))
-                all_skills.append(skills_text)
-            self.skill_matrix = self.vectorizer.transform(all_skills)
-        
-        # Use cosine similarity for recommendations
+        # Calculate similarity scores
         similarities = cosine_similarity(user_vector, self.skill_matrix).flatten()
         
         # Get top N careers
@@ -310,28 +327,18 @@ class CareerRecommender:
             career = self.career_paths[idx]
             score = float(similarities[idx])
             
-            # Calculate matching skills
-            matching_skills = []
-            for skill in user_skills:
-                if skill in career.get('required_skills', []):
-                    matching_skills.append(skill)
+            # Get matching and missing skills
+            required_skills = career.get('required_skills', [])
+            matching_skills = [skill for skill in user_skills if skill in required_skills]
+            missing_skills = [skill for skill in required_skills if skill not in user_skills]
             
-            # Calculate missing skills
-            missing_skills = []
-            for skill in career.get('required_skills', []):
-                if skill not in user_skills:
-                    missing_skills.append(skill)
-            
-            # Add recommendation with additional information
             recommendations.append({
                 'career': career,
-                'relevance_score': score,
+                'score': round(score, 2),
                 'matching_skills': matching_skills,
-                'missing_skills': missing_skills,
-                'missing_skills_count': len(missing_skills),
-                'matching_skills_count': len(matching_skills)
+                'missing_skills': missing_skills
             })
-        
+            
         return recommendations
     
     def get_skill_gaps(self, user_skills, career_title):

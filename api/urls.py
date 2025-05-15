@@ -12,6 +12,9 @@ from .views.job_views import (
     JobListingsView, JobDetailView, RelevantJobsView, ScrapeJobsView, JobRecommendationView
 )
 from .views.career_views import CareerViewSet
+from .views.feedback_views import (
+    FeedbackListView, UserFeedbackListView, CreateFeedbackView, UpdateFeedbackStatusView
+)
 
 router = routers.DefaultRouter()
 router.register(r'career', CareerViewSet, basename='career')
@@ -43,4 +46,10 @@ urlpatterns = [
     path('jobs/relevant/', RelevantJobsView.as_view(), name='relevant-jobs'),
     path('jobs/scrape/', ScrapeJobsView.as_view(), name='scrape-jobs'),
     path('jobs/recommend/', JobRecommendationView.as_view(), name='job-recommend'),
+    
+    # Feedback routes
+    path('feedback/', FeedbackListView.as_view(), name='feedback-list'),
+    path('feedback/user/', UserFeedbackListView.as_view(), name='user-feedback'),
+    path('feedback/create/', CreateFeedbackView.as_view(), name='create-feedback'),
+    path('feedback/update/<int:feedback_id>/', UpdateFeedbackStatusView.as_view(), name='update-feedback'),
 ]

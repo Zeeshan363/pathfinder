@@ -1,31 +1,47 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
 import numpy as np
 import json
 import os
 import re
 import random
 import logging
-from sklearn.feature_extraction.text import CountVectorizer
+try:
+    from sklearn.feature_extraction.text import CountVectorizer
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
 from .career_recommender import CareerRecommender
 
 logger = logging.getLogger(__name__)
 
-class IntentClassifier(nn.Module):
-    """Neural network for classifying user intent from chat messages"""
-    
-    def __init__(self, input_size, hidden_size, output_size):
-        super(IntentClassifier, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, output_size)
-        self.dropout = nn.Dropout(0.2)
+if TORCH_AVAILABLE:
+    class IntentClassifier(nn.Module):
+        """Neural network for classifying user intent from chat messages"""
         
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        def __init__(self, input_size, hidden_size, output_size):
+            super(IntentClassifier, self).__init__()
+            self.fc1 = nn.Linear(input_size, hidden_size)
+            self.fc2 = nn.Linear(hidden_size, output_size)
+            self.dropout = nn.Dropout(0.2)
+            
+        def forward(self, x):
+            x = F.relu(self.fc1(x))
+            x = self.dropout(x)
+            x = self.fc2(x)
+            return F.log_softmax(x, dim=1)
+else:
+    # Fallback placeholder class when torch is not available
+    class IntentClassifier:
+        def __init__(self, input_size, hidden_size, output_size):
+            self.input_size = input_size
+            self.hidden_size = hidden_size
+            self.output_size = output_size
 
 class CareerChatbot:
     """Simple career guidance chatbot with intent recognition and responses"""
@@ -48,33 +64,36 @@ class CareerChatbot:
         
         # Initialize model with dynamic output size
         self.model = IntentClassifier(self.input_size, self.hidden_size, self.output_size)
-        self.vectorizer = CountVectorizer(max_features=self.input_size)
+        
+        if SKLEARN_AVAILABLE:
+            self.vectorizer = CountVectorizer(max_features=self.input_size)
+            
+            # Train vectorizer on intents patterns
+            patterns = []
+            for intent in self.intents:
+                patterns.extend(intent['patterns'])
+            
+            if patterns:
+                self.vectorizer.fit(patterns)
         
         # Connect to career recommender
         self.career_recommender = CareerRecommender()
         
-        # Train vectorizer on intents patterns
-        patterns = []
-        for intent in self.intents:
-            patterns.extend(intent['patterns'])
-        
-        if patterns:
-            self.vectorizer.fit(patterns)
-        
         # Try to load pre-trained model if it exists
-        try:
-            if os.path.exists(self.model_path):
-                self.model.load_state_dict(torch.load(self.model_path))
-                self.model.eval()
-                logger.info(f"Loaded pre-trained chatbot model from {self.model_path}")
-            else:
+        if TORCH_AVAILABLE:
+            try:
+                if os.path.exists(self.model_path):
+                    self.model.load_state_dict(torch.load(self.model_path))
+                    self.model.eval()
+                    logger.info(f"Loaded pre-trained chatbot model from {self.model_path}")
+                else:
+                    # Train a basic model if none exists
+                    logger.info("No pre-trained model found, training new model...")
+                    self._train_basic_model()
+            except Exception as e:
+                logger.warning(f"Could not load pre-trained chatbot model: {str(e)}")
                 # Train a basic model if none exists
-                logger.info("No pre-trained model found, training new model...")
                 self._train_basic_model()
-        except Exception as e:
-            logger.warning(f"Could not load pre-trained chatbot model: {str(e)}")
-            # Train a basic model if none exists
-            self._train_basic_model()
     
     def _load_intents(self):
         """Load intents data from JSON file or create sample intents"""
@@ -212,6 +231,10 @@ class CareerChatbot:
     
     def _train_basic_model(self, epochs=100, learning_rate=0.001):
         """Train a basic intent classification model if none exists"""
+        if not TORCH_AVAILABLE or not SKLEARN_AVAILABLE:
+            logger.error("PyTorch or scikit-learn not available, cannot train model")
+            return False
+            
         # Prepare training data
         X_train = []
         y_train = []

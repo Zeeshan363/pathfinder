@@ -1,20 +1,36 @@
-import torch
-import torch.nn as nn
+try:
+    import torch
+    import torch.nn as nn
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
 from api.models import JobListing, Profile
 
-class JobEmbeddingModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(JobEmbeddingModel, self).__init__()
-        self.embedding_layer = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, output_size)
-        )
-    def forward(self, x):
-        return self.embedding_layer(x)
+if TORCH_AVAILABLE:
+    class JobEmbeddingModel(nn.Module):
+        def __init__(self, input_size, hidden_size, output_size):
+            super(JobEmbeddingModel, self).__init__()
+            self.embedding_layer = nn.Sequential(
+                nn.Linear(input_size, hidden_size),
+                nn.ReLU(),
+                nn.Linear(hidden_size, output_size)
+            )
+        def forward(self, x):
+            return self.embedding_layer(x)
+else:
+    # Fallback placeholder class when torch is not available
+    class JobEmbeddingModel:
+        def __init__(self, input_size, hidden_size, output_size):
+            self.input_size = input_size
+            self.hidden_size = hidden_size
+            self.output_size = output_size
 
 class JobRecommender:
     def __init__(self, model_path=None):
@@ -22,16 +38,22 @@ class JobRecommender:
         self.hidden_size = 50
         self.output_size = 20
         self.model = JobEmbeddingModel(self.input_size, self.hidden_size, self.output_size)
-        self.vectorizer = TfidfVectorizer(max_features=self.input_size)
+        if SKLEARN_AVAILABLE:
+            self.vectorizer = TfidfVectorizer(max_features=self.input_size)
         self.model_path = model_path or 'job_model.pth'
         # Try to load pre-trained model if it exists
-        try:
-            self.model.load_state_dict(torch.load(self.model_path))
-            self.model.eval()
-        except Exception:
-            pass
+        if TORCH_AVAILABLE:
+            try:
+                self.model.load_state_dict(torch.load(self.model_path))
+                self.model.eval()
+            except Exception:
+                pass
 
     def get_recommendations(self, user_profile: Profile, top_n=5):
+        # Check if we have the required libraries
+        if not SKLEARN_AVAILABLE:
+            return []
+            
         # Gather all jobs from the database
         jobs = list(JobListing.objects.filter(is_active=True))
         if not jobs:

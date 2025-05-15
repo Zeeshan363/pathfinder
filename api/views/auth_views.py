@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from ..serializers.auth_serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer
 from rest_framework.pagination import PageNumberPagination
+from ..permissions import IsAdminRole
 
 User = get_user_model()
 
@@ -27,7 +28,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 class GetAllUsersView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsAdminRole]
     
     class UserPagination(PageNumberPagination):
         page_size = 10
