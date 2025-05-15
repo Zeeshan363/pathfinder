@@ -10,6 +10,7 @@ from ..serializers.job_serializers import (
     JobListingSerializer, JobListingSummarySerializer, RelevantJobListingSerializer
 )
 from ..services.job_scraper_service import LinkedInJobScraper
+from api.ml.models.job_recommender import JobRecommender
 
 logger = logging.getLogger(__name__)
 
@@ -238,4 +239,39 @@ class ScrapeJobsView(APIView):
             return Response(
                 {"error": f"Failed to scrape jobs: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            ) 
+            )
+
+class JobRecommendationView(APIView):
+    """AI-powered job recommendations for the user"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({"error": "Profile not found. Please complete your profile first."}, status=status.HTTP_404_NOT_FOUND)
+        recommender = JobRecommender()
+        recommendations = recommender.get_recommendations(profile, top_n=10)
+        # Serialize jobs and add match info
+        result = []
+        for rec in recommendations:
+            job = rec['job']
+            result.append({
+                'id': job.id,
+                'title': job.title,
+                'company': job.company,
+                'location': job.location,
+                'description': job.description,
+                'job_url': job.job_url,
+                'logo_url': job.logo_url,
+                'source': job.source,
+                'posted_date': job.posted_date,
+                'skills': job.skills,
+                'job_type': job.job_type,
+                'seniority_level': job.seniority_level,
+                'salary_range': job.salary_range,
+                'match_score': rec['match_score'],
+                'matching_skills': rec['matching_skills'],
+                'missing_skills': rec['missing_skills'],
+            })
+        return Response({'recommendations': result}, status=status.HTTP_200_OK) 

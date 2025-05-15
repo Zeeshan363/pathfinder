@@ -9,7 +9,7 @@ from .views.profile_views import (
 )
 from .views.recommendation_views import GetCareerPathsView
 from .views.job_views import (
-    JobListingsView, JobDetailView, RelevantJobsView, ScrapeJobsView
+    JobListingsView, JobDetailView, RelevantJobsView, ScrapeJobsView, JobRecommendationView
 )
 from .views.career_views import CareerViewSet
 
@@ -42,4 +42,5 @@ urlpatterns = [
     path('jobs/<int:job_id>/', JobDetailView.as_view(), name='job-detail'),
     path('jobs/relevant/', RelevantJobsView.as_view(), name='relevant-jobs'),
     path('jobs/scrape/', ScrapeJobsView.as_view(), name='scrape-jobs'),
+    path('jobs/recommend/', JobRecommendationView.as_view(), name='job-recommend'),
 ]
